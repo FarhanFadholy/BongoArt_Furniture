@@ -24,7 +24,7 @@ export default function Navbar() {
                 <Link
                     href="/"
                     className="text-white text-base md:text-xl font-bold tracking-widest uppercase hover:opacity-90 transition-opacity"
-                    style={{ fontFamily: '"Comic Sans MS", "Comic Sans", cursive' }}
+                    style={{ fontFamily: 'var(--font-comic-neue), "Comic Sans MS", "Comic Sans", cursive' }}
                 >
                     Bongo Art
                 </Link>

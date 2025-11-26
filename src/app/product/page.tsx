@@ -21,7 +21,7 @@ const product = {
 
 export default function ProductPage() {
     return (
-        <main className="min-h-screen pt-32 pb-20 px-6 md:px-16 lg:px-32 bg-white">
+        <main className="min-h-screen pt-4 pb-20 px-6 md:px-16 lg:px-32 bg-white">
             <div className="max-w-screen-2xl mx-auto">
 
                 {/* Breadcrumb / Back */}
