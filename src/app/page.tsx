@@ -1,4 +1,9 @@
-"use client";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Home | BongoArt",
+  description: "Welcome to BongoArt. Explore our premium collection of river stone bathtubs and teak furniture.",
+};
 
 import Hero from "@/components/Hero";
 import Philosophy from "@/components/Philosophy";

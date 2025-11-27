@@ -6,16 +6,24 @@ export const categories = [
     { id: "decor", label: "Home Decor" },
 ];
 
-// Helper to generate items
+// Helper to generate items with more variety
+const furnitureNames = ["Teak Lounge Chair", "Minimalist Dining Chair", "Rustic Stool", "Modern Armchair", "Teak Coffee Table", "Garden Bench", "Accent Side Table", "Heritage Cabinet"];
+const furnitureDescs = [
+    "Handcrafted from premium sustainable teak wood, this piece embodies the perfect balance of modern design and traditional craftsmanship.",
+    "A statement piece designed for comfort and style, featuring organic curves and a smooth, natural finish.",
+    "Built to last generations, this sturdy furniture piece showcases the raw beauty of natural timber with a contemporary twist.",
+    "Elegant and functional, this item brings a touch of warmth and sophistication to any living space."
+];
+
 const furnitureItems = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'].map((name, idx) => ({
     id: `furn-${idx}`,
-    name: `Signature Furniture ${name.toUpperCase()}`,
+    name: furnitureNames[idx % furnitureNames.length] + ` ${name.toUpperCase()}`,
     category: "furniture",
     image: `/products/furniture/${name}.webp`,
-    description: "Handcrafted from premium sustainable teak wood, this piece embodies the perfect balance of modern design and traditional craftsmanship. Built to last generations.",
-    dimensions: "L 60cm x W 60cm x H 85cm",
+    description: furnitureDescs[idx % furnitureDescs.length],
+    dimensions: idx % 2 === 0 ? "L 60cm x W 60cm x H 85cm" : "L 120cm x W 60cm x H 45cm",
     material: "Solid Teak Wood",
-    weight: "12kg"
+    weight: idx % 2 === 0 ? "12kg" : "25kg"
 }));
 
 const lightingItems = Array.from({ length: 12 }, (_, i) => i + 1).map((num, idx) => ({
@@ -24,7 +32,7 @@ const lightingItems = Array.from({ length: 12 }, (_, i) => i + 1).map((num, idx)
     category: "lighting",
     image: `/products/lighting/c (${num}).webp`,
     description: "Illuminate your space with our Lumina Series. Featuring natural woven materials that cast warm, intricate shadows, creating a serene atmosphere in any room.",
-    dimensions: "H 120cm x D 40cm",
+    dimensions: idx % 2 === 0 ? "H 120cm x D 40cm" : "H 60cm x D 30cm",
     material: "Rattan & Rice Paper",
     weight: "3kg"
 }));
@@ -41,7 +49,7 @@ const stoneItems = stoneFiles.map((name, idx) => ({
     description: "Carved from a single river boulder, this stone piece retains its natural organic exterior while featuring a perfectly polished interior. A true statement of nature's beauty.",
     dimensions: "Approx. L 80cm x W 50cm",
     material: "Natural River Stone",
-    weight: "45kg"
+    weight: `${40 + (idx * 5)}kg`
 }));
 
 const decorFiles = [
