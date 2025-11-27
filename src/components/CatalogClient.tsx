@@ -2,12 +2,45 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { products, categories } from "@/data/products";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
+import { products as staticProducts, categories } from "@/data/products";
+
+// Define Product interface
+interface Product {
+    id: string;
+    name: string;
+    category: string;
+    image: string;
+    description?: string;
+}
 
 export default function CatalogClient() {
     const [activeCategory, setActiveCategory] = useState("all");
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    const fetchProducts = async () => {
+        // Try to fetch from Supabase
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (!error && data && data.length > 0) {
+            setProducts(data);
+        } else {
+            // Fallback to static data if DB is empty or error (e.g. table doesn't exist yet)
+            console.log("Using static data fallback");
+            setProducts(staticProducts);
+        }
+        setLoading(false);
+    };
 
     const filteredItems = activeCategory === "all"
         ? products
@@ -44,49 +77,53 @@ export default function CatalogClient() {
                 </div>
 
                 {/* Product Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-20">
-                    {filteredItems.map((item, idx) => (
-                        <motion.div
-                            key={item.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.05 }}
-                            viewport={{ once: true, margin: "-50px" }}
-                            className="group cursor-pointer"
-                        >
-                            <div className="aspect-[3/4] bg-stone-50 relative overflow-hidden mb-6 p-8">
-                                <div
-                                    className="w-full h-full bg-contain bg-center bg-no-repeat transition-transform duration-1000 group-hover:scale-110"
-                                    style={{ backgroundImage: `url("${item.image}")` }}
-                                />
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
+                {loading ? (
+                    <div className="text-center py-20 text-gray-400">Loading collection...</div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-20">
+                        {filteredItems.map((item) => (
+                            <motion.div
+                                key={item.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.05 }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                className="group cursor-pointer"
+                            >
+                                <div className="aspect-[3/4] bg-stone-50 relative overflow-hidden mb-6 p-8">
+                                    <div
+                                        className="w-full h-full bg-contain bg-center bg-no-repeat transition-transform duration-1000 group-hover:scale-110"
+                                        style={{ backgroundImage: `url("${item.image}")` }}
+                                    />
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
 
-                                {/* Overlay Content */}
-                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                    <Link href={`/product/${item.id}`}>
-                                        <Button
-                                            variant="outline"
-                                            className="bg-white/90 border-none text-gray-900 hover:bg-white uppercase tracking-widest text-xs px-8 py-6 shadow-sm"
-                                        >
-                                            View Details
-                                        </Button>
-                                    </Link>
+                                    {/* Overlay Content */}
+                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                        <Link href={`/product/${item.id}`}>
+                                            <Button
+                                                variant="outline"
+                                                className="bg-white/90 border-none text-gray-900 hover:bg-white uppercase tracking-widest text-xs px-8 py-6 shadow-sm"
+                                            >
+                                                View Details
+                                            </Button>
+                                        </Link>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="text-center space-y-2">
-                                <h3 className="text-lg font-medium text-gray-900 uppercase tracking-widest">
-                                    {item.name}
-                                </h3>
-                                <p className="text-xs text-stone-400 uppercase tracking-widest">
-                                    {categories.find(c => c.id === item.category)?.label}
-                                </p>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+                                <div className="text-center space-y-2">
+                                    <h3 className="text-lg font-medium text-gray-900 uppercase tracking-widest">
+                                        {item.name}
+                                    </h3>
+                                    <p className="text-xs text-stone-400 uppercase tracking-widest">
+                                        {categories.find(c => c.id === item.category)?.label || item.category}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
 
-                {filteredItems.length === 0 && (
+                {!loading && filteredItems.length === 0 && (
                     <div className="text-center py-20 text-gray-400 font-light">
                         No items found in this category.
                     </div>

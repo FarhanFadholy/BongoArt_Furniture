@@ -1,18 +1,33 @@
 import type { Metadata, ResolvingMetadata } from "next";
 import ProductDetailClient from "@/components/ProductDetailClient";
-import { products } from "@/data/products";
+import { products as staticProducts } from "@/data/products";
+import { supabase } from "@/lib/supabase";
 
 type Props = {
     params: Promise<{ id: string }>;
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
+// Helper to fetch product
+async function getProduct(id: string) {
+    const { data } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (data) return data;
+
+    // Fallback to static
+    return staticProducts.find(p => p.id === id);
+}
+
 export async function generateMetadata(
     { params }: Props,
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     const { id } = await params;
-    const product = products.find((p) => p.id === id);
+    const product = await getProduct(id);
 
     if (!product) {
         return {
@@ -22,10 +37,10 @@ export async function generateMetadata(
 
     return {
         title: `${product.name} | BongoArt`,
-        description: product.description.substring(0, 160),
+        description: product.description?.substring(0, 160) || "Product details",
         openGraph: {
             title: `${product.name} | BongoArt`,
-            description: product.description,
+            description: product.description || "Product details",
             images: [product.image],
         },
     };
@@ -33,7 +48,7 @@ export async function generateMetadata(
 
 export default async function ProductDetailPage({ params }: Props) {
     const { id } = await params;
-    const product = products.find((p) => p.id === id);
+    const product = await getProduct(id);
 
     // We can handle the "not found" case here or inside the client component
     // If we pass undefined to the client component, it handles it.

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Comic_Neue } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import ClientLayout from "@/components/ClientLayout";
 
 const comicNeue = Comic_Neue({
   subsets: ["latin"],
@@ -57,9 +56,9 @@ export default function RootLayout({
       <body
         className={`antialiased ${comicNeue.variable}`}
       >
-        <Navbar />
-        {children}
-        <Footer />
+        <ClientLayout>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );
