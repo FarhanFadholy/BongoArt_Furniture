@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -25,7 +25,7 @@ const CATEGORIES = [
     { id: "decor", label: "Home Decor", icon: FaLeaf, color: "bg-green-100 text-green-700" },
 ];
 
-export default function DashboardProducts() {
+function DashboardProductsContent() {
     const searchParams = useSearchParams();
     const activeCategory = searchParams.get('category') || 'all';
 
@@ -308,5 +308,13 @@ export default function DashboardProducts() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function DashboardProducts() {
+    return (
+        <Suspense fallback={<div className="p-8 text-center">Loading dashboard...</div>}>
+            <DashboardProductsContent />
+        </Suspense>
     );
 }
