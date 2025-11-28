@@ -19,7 +19,6 @@ export default function Navbar() {
 
     return (
         <nav className="sticky top-0 left-0 w-full z-50 shadow-sm transition-all duration-300 flex h-16 bg-white">
-            {/* Logo Section - 20% width on desktop, auto on mobile */}
             <div className="bg-green-700 h-full flex items-center justify-center md:w-[20%] w-auto px-4 md:px-0">
                 <Link
                     href="/"

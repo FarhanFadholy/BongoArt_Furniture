@@ -1,19 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { FaBox, FaSignOutAlt, FaBars, FaTimes, FaChair, FaLightbulb, FaGem, FaLeaf, FaLayerGroup } from "react-icons/fa";
+import { FaSignOutAlt, FaBars, FaTimes } from "react-icons/fa";
+import SidebarNav from "@/components/dashboard/SidebarNav";
 
 export default function DashboardLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const currentCategory = searchParams.get('category');
     const router = useRouter();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
@@ -33,13 +31,6 @@ export default function DashboardLayout({
         router.push('/login');
     };
 
-    const categories = [
-        { id: "furniture", label: "Furniture", icon: FaChair },
-        { id: "lighting", label: "Lighting", icon: FaLightbulb },
-        { id: "stone", label: "Stone Collection", icon: FaGem },
-        { id: "decor", label: "Home Decor", icon: FaLeaf },
-    ];
-
     return (
         <div className="min-h-screen bg-gray-50 flex">
             {/* Sidebar */}
@@ -56,44 +47,9 @@ export default function DashboardLayout({
                     </button>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
-                    {/* Main Menu */}
-                    <div>
-                        <p className="px-4 text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Main</p>
-                        <Link
-                            href="/dashboard/products"
-                            onClick={() => setIsSidebarOpen(false)}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${pathname === '/dashboard/products' && !currentCategory
-                                ? "bg-green-700 text-white"
-                                : "text-stone-400 hover:bg-stone-800 hover:text-white"
-                                }`}
-                        >
-                            <FaLayerGroup />
-                            <span>All Products</span>
-                        </Link>
-                    </div>
-
-                    {/* Categories Menu */}
-                    <div>
-                        <p className="px-4 text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Categories</p>
-                        <div className="space-y-1">
-                            {categories.map((cat) => (
-                                <Link
-                                    key={cat.id}
-                                    href={`/dashboard/products?category=${cat.id}`}
-                                    onClick={() => setIsSidebarOpen(false)}
-                                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-sm ${currentCategory === cat.id
-                                        ? "bg-stone-800 text-green-400 border-l-2 border-green-500"
-                                        : "text-stone-400 hover:bg-stone-800 hover:text-white"
-                                        }`}
-                                >
-                                    <cat.icon size={14} />
-                                    <span>{cat.label}</span>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                </nav>
+                <Suspense fallback={<div className="p-4 text-stone-500">Loading navigation...</div>}>
+                    <SidebarNav onNavigate={() => setIsSidebarOpen(false)} />
+                </Suspense>
 
                 <div className="p-4 border-t border-stone-800">
                     <button
